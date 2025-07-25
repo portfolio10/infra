@@ -1,19 +1,18 @@
-# Terraform 상태 및 캐시 파일
+# Terraform 관련 무시할 파일들
 *.tfstate
 *.tfstate.*
-
-# Terraform 변수 파일 (민감정보 방지)
 *.tfvars
-
-# Terraform 실행 계획 파일
-*.tfplan
-
-# Crash log
-crash.log
-
-# Provider 바이너리/캐시 디렉토리
 .terraform/
+.terraform.lock.hcl
 
-# IDE 또는 시스템 파일
-.DS_Store
-Thumbs.db
+# 대용량 파일 패턴
+*.zip
+*.tar.gz
+*.exe
+*.dmg
+*.pkg
+
+# 특정 크기 이상 파일들 (파일명으로 직접 지정)
+large-file.bin
+data/
+logs/
