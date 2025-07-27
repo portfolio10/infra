@@ -2,6 +2,17 @@ provider "aws" {
   region = var.aws_region
 }
 
+data "terraform_remote_state" "s3" {
+  backend = "s3" 
+    config = {
+      bucket         = "application-team-tfstate-bucket"
+      key            = "develop/s3.tfstate"
+      region         = var.aws_region
+      dynamodb_table = "terraform-locks"
+      encrypt        = true
+  }
+}
+
 resource "aws_lambda_function" "sast_lambda_infra" {
   function_name = var.function_name
   role          = var.iam_role_arn
@@ -24,11 +35,11 @@ resource "aws_lambda_permission" "allow_s3" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.sast_lambda.function_name
   principal     = "s3.amazonaws.com"
-  source_arn    = var.sast_s3_bucket_arn
+  source_arn    = data.terraform_remote_state.s3.output.s3_bucket_sast_arn
 }
 
 resource "aws_s3_bucket_notification" "sast_notification" {
-  bucket = var.sast_s3_bucket_name
+  bucket = data.terraform_remote_state.s3.output.sast_s3_bucket_name
 
   lambda_function {
     lambda_function_arn = aws_lambda_function.sast_lambda.arn
